@@ -1,6 +1,10 @@
 import type { Mention } from './scoring';
 
 export type SpreadNode = { id: string; members: Mention[]; x: number; y: number; row: number };
+
+/** When a marker appears on the plotted timeline — the order the replay reveals them in. */
+export const spreadTime = (node: SpreadNode, min: number, max: number) => min + ((node.x - 128) / 970) * (max - min);
+
 export function layoutSpread(mentions: Mention[], now: Date) {
   const dated = mentions.filter(m => m.published_at && Number.isFinite(Date.parse(m.published_at)));
   const times = dated.map(m => Date.parse(m.published_at ?? ''));

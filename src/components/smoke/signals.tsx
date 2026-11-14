@@ -1,17 +1,18 @@
 import { aggregateSignals, signalLabels, signalOrder } from '@/lib/signals';
 import type { Mention } from '@/lib/scoring';
+import { CountUp } from './motion';
 
 export function SignalStack({ mentions, now }: { mentions: Mention[]; now: Date }) {
   const { counts, total, volume, trend } = aggregateSignals(mentions, now);
   const peak = Math.max(1, ...volume), top = Math.max(1, ...Object.values(counts));
-  return <section className="signal-stack reveal" aria-labelledby="signal-title">
+  return <section className="signal-stack" aria-labelledby="signal-title">
     <div className="signal-head">
       <div><h2 id="signal-title">Signal stack</h2><p>{total} weak signals assembled into one picture. None counts alone; together they show how much is really there.</p></div>
       <div className={`signal-trend trend-${trend}`}><span className="pulse" aria-hidden="true"/>Signal {trend}</div>
     </div>
     <div className="signal-grid">
       <ul className="signal-bars">{signalOrder.map((k, i) => <li key={k} style={{ ['--i' as string]: i }}>
-        <div className="signal-row"><span>{signalLabels[k].label}</span><span className="mono">{counts[k]}</span></div>
+        <div className="signal-row"><span>{signalLabels[k].label}</span><span className="mono"><CountUp value={counts[k]}/></span></div>
         <div className="signal-track"><span className={`signal-fill fill-${k}`} style={{ width: `${(counts[k] / top) * 100}%` }}/></div>
         <p>{signalLabels[k].note}</p>
       </li>)}</ul>

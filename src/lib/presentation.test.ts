@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { sampleTraces } from '@/mocks/sampleTraces';
 import { exportMarkdownBrief, numberedVerdict, isCachedCheck } from './brief';
-import { layoutSpread } from './spread';
+import { layoutSpread, spreadTime } from './spread';
+import { countAt } from './display';
 
 const trace = sampleTraces[0];
 if (!trace) throw new Error('Missing test fixture');
@@ -40,5 +41,26 @@ describe('Trace presentation rules', () => {
     const { nodes } = layoutSpread(mentions, new Date(trace.checked_at));
     expect(nodes).toHaveLength(1);
     expect(nodes[0]?.members).toHaveLength(35);
+  });
+  it('reveals spread markers in chronological order during replay', () => {
+    const source = trace.mentions[0];
+    if (!source) throw new Error('Missing source');
+    const base = Date.parse(trace.checked_at);
+    const mentions = [0, 1, 2, 3].map(i => ({ ...source, id: `day-${i}`, published_at: new Date(base - i * 86400000).toISOString() }));
+    const { nodes, min, max } = layoutSpread(mentions, new Date(base));
+    expect(nodes).toHaveLength(4);
+    const daysApart = nodes.map(n => Math.round((base - spreadTime(n, min, max)) / 86400000)).sort((a, b) => a - b);
+    expect(daysApart).toEqual([0, 1, 2, 3]);
+    const half = min + (max - min) / 2;
+    expect(nodes.filter(n => spreadTime(n, min, max) <= half).map(n => n.id).sort()).toEqual(['day-2', 'day-3']);
+  });
+  it('counts up to the exact real number and never past it', () => {
+    expect(countAt(115, 0)).toBe(0);
+    expect(countAt(115, 1)).toBe(115);
+    expect(countAt(115, 2)).toBe(115);
+    expect(countAt(115, -1)).toBe(0);
+    const steps = [0.1, 0.25, 0.5, 0.75, 0.9].map(t => countAt(115, t));
+    expect(steps.every((v, i) => i === 0 || v >= steps[i - 1]!)).toBe(true);
+    expect(steps.every(v => v <= 115)).toBe(true);
   });
 });
