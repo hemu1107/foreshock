@@ -44,4 +44,4 @@ Implementation note: processing uses awaited, bounded server stages while the wo
 - [x] Verify 1440, 1280, tablet and phone with no sideways page scroll, plus tests.
 
 ## Open tasks
-- [ ] Screenshots of each page for the user
+- [x] Screenshots of each page for the user
