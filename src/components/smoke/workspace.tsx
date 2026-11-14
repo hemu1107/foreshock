@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode, type Context } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { Radar, Bookmark, BookOpen, ArrowUpRight, FlaskConical } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
@@ -10,7 +10,9 @@ import { toast } from 'sonner';
 import { isCachedCheck } from '@/lib/brief';
 
 type Workspace = { traces: LiveTrace[]; sample: boolean; setSample: (v:boolean)=>void; toggleWatch:(id:string)=>Promise<void>; recheck:(id:string)=>Promise<void>; create:(input:{query:string;entities:string[];window_days:7|30|90})=>Promise<string>; load:(id:string)=>Promise<LiveTrace|null>; error:string; loading:boolean; reload:()=>void; isCached:(trace:LiveTrace)=>boolean };
-const WorkspaceContext = createContext<Workspace | null>(null);
+// Reuse one context across hot reloads so the provider and pages never disagree.
+const contextStore = globalThis as typeof globalThis & { __smokeWorkspaceContext?: Context<Workspace | null> };
+const WorkspaceContext = contextStore.__smokeWorkspaceContext ??= createContext<Workspace | null>(null);
 export function SmokeProvider({children}:{children:ReactNode}) {
   const [samples,setSamples] = useState(sampleTraces);
   const [live,setLive]=useState<LiveTrace[]>([]);
