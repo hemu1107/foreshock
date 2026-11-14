@@ -76,8 +76,11 @@ export async function opencrawlPrecedents(queries: string[]): Promise<Precedent[
         if (typeof docId === 'string' && !documents.has(docId)) documents.set(docId, doc);
       }
     }
-    const cases = await Promise.all([...documents.keys()].slice(0, 4).map(async docId => parseCase(caseMarkdown(await call('fetch', { id: docId })), docId)));
-    return cases.filter((c): c is Precedent => c !== null);
+    console.info('opencrawl_search', { queries: queries.slice(0, 3), source: 'connectors', results: documents.size });
+    const raws = await Promise.all([...documents.keys()].slice(0, 4).map(async docId => ({ docId, markdown: caseMarkdown(await call('fetch', { id: docId })) })));
+    const cases = raws.map(r => parseCase(r.markdown, r.docId)).filter((c): c is Precedent => c !== null);
+    if (raws.length && !cases.length) console.warn('opencrawl_parse_zero', { firstRaw: raws[0]!.markdown.slice(0, 1500) });
+    return cases;
   };
   try {
     const deadline = new Promise<never>((_, reject) => { timeout = setTimeout(() => { controller.abort(); reject(new Error('OpenCrawl deadline exceeded.')); }, OPENCRAWL_TIMEOUT); });

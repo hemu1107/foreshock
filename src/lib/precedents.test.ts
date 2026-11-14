@@ -6,10 +6,11 @@ const markdown = '# Case: Example acquisition\nfirst_reported_by: Bloomberg\ndat
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.useRealTimers(); });
 describe('OpenCrawl ledger rules', () => {
   it('always restricts searches to connector documents with eight results', () => {
-    expect(ledgerSearchArgs('Bloomberg acquisition')).toEqual({query:'Bloomberg acquisition',source:'connectors',match:'any',limit:8});
+    expect(ledgerSearchArgs('Bloomberg acquisition')).toEqual({query:'Bloomberg acquisition',source:'connectors',match:'any',limit:10});
   });
   it('builds three short outlet, company and anonymous-source queries', () => {
-    expect(precedentQueries('Acme buys Beta',['Acme','Beta'],'Bloomberg')).toEqual(['Bloomberg acquisition','Acme acquisition','acquisition anonymous sources']);
+    expect(precedentQueries('Acme buys Beta',['Acme','Beta'],'Bloomberg')).toEqual(['Bloomberg acquire','Acme acquire','talks acquire outcome']);
+    expect(precedentQueries('Acme buys Beta',['Acme'],'WSJ')[0]).toBe('Wall Street Journal acquire');
   });
   it('parses all supplied markdown case fields', () => {
     expect(parseCase(markdown,'case-1')).toEqual({document_id:'case-1',case_title:'Example acquisition',outlet:'Bloomberg',first_reported_at:'2025-01-10',sourcing:'anonymous sources',deal_type:'acquisition',outcome:'confirmed',resolved:true,days_to_resolution:12,resolution_source:'https://example.com/filing'});
