@@ -7,7 +7,7 @@ describe('Live pipeline rules',()=>{
  it('maps a thirty-day window to month',()=>expect(freshness(30,now)).toBe('month'));
  it('maps ninety days to an exact date range',()=>expect(freshness(90,now)).toBe('2026-08-16to2026-11-14'));
  it('strips all query parameters and fragments for deduplication',()=>expect(canonicalUrl('https://reuters.com/story?utm_source=x&id=4#top')).toBe('https://reuters.com/story'));
- it('builds six rumor, talks, acquisition, denial, confirmation and statement queries',()=>expect(buildQueries('A buys B',['A','B'])).toEqual(['A buys B','A B talks','A acquisition','A denies','A confirms','A statement']));
+ it('builds rumor, talks, denial, confirmation, statement and official-statement queries',()=>expect(buildQueries('A buys B',['A','B'])).toEqual(['A buys B','A B talks','A acquisition','A denies','A confirms','A statement','A B definitive agreement','A press release B','B statement A','A B ends talks']));
  it('extracts at most three attribution sentences',()=>expect(attributionQuotes('Sources said talks started. According to Reuters, no deal. People familiar said more. They confirmed details.')).toHaveLength(3));
  it('preserves unavailable publication dates rather than inventing dates',()=>expect(sourceMention({url:'https://reuters.com/story',page_age:'not-a-date'},'you_search')?.published_at).toBe(null));
  it('tags social sources and preserves the adapter tag',()=>expect(sourceMention({url:'https://x.com/example'},'treg')).toMatchObject({sourcing:'social',mainstream:false,source_api:'treg'}));

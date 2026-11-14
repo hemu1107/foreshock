@@ -181,6 +181,7 @@ export type Database = {
       }
       traces: {
         Row: {
+          analyst_note: Json | null
           checked_at: string
           claim: string
           confidence: number
@@ -206,6 +207,7 @@ export type Database = {
           window_days: number
         }
         Insert: {
+          analyst_note?: Json | null
           checked_at?: string
           claim: string
           confidence?: number
@@ -231,6 +233,7 @@ export type Database = {
           window_days?: number
         }
         Update: {
+          analyst_note?: Json | null
           checked_at?: string
           claim?: string
           confidence?: number

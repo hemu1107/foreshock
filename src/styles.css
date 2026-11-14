@@ -191,3 +191,8 @@
  .metrics-overview { flex-wrap:wrap; } .input-toolbar > div { flex-wrap:wrap; }
 }
 @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none!important; transition:none!important; } }
+
+.trace-chip { display:inline-flex; align-items:center; gap:5px; max-width:340px; font-size:11px; line-height:1.35; color:var(--foreground); background:var(--secondary); border:1px solid var(--border); border-radius:4px; padding:4px 8px; }
+.trace-chip svg { width:12px; height:12px; flex:none; }
+.trace-chip-reason { color:var(--muted-foreground); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+.trace-chip-warning { color:var(--denied); border-color:currentColor; background:transparent; text-decoration:none; }

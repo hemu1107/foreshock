@@ -1,4 +1,5 @@
 import { registrableDomain } from './domains';
+import { supersedes } from './official';
 
 export type Status = 'Whisper' | 'Rumor' | 'Corroborated' | 'Confirmed' | 'Denied' | 'Went cold';
 export type Sourcing = 'original reporting' | 'cites outlet' | 'named source' | 'anonymous source' | 'official statement' | 'filing' | 'social' | 'unsourced';
@@ -28,19 +29,24 @@ export function scoreMentions(mentions: Mention[], now: Date) {
   const echoes = relevant.filter(m => m.sourcing === 'cites outlet').length;
   const official = relevant.filter(m => m.involved_party && ['official statement', 'filing'].includes(m.sourcing));
   const timestamp = (m: Mention) => m.published_at ? new Date(m.published_at).getTime() : 0;
-  const denial = Math.max(0, ...official.filter(m => m.stance === 'denies').map(timestamp));
+  const textOf = (m: Mention) => [m.title, m.snippet, ...m.attribution_quotes].join('\n');
+  const superseding = official.filter(m => supersedes(textOf(m)));
+  const denial = Math.max(0, ...official.filter(m => m.stance === 'denies' && !superseding.includes(m)).map(timestamp));
   const confirmations = official.filter(m => m.stance === 'confirms');
   const confirmed = confirmations.some(m => !denial || timestamp(m) > denial);
   const latest = Math.max(0, ...relevant.map(timestamp));
   const age = latest ? now.getTime() - latest : 0;
   let status: Status = 'Whisper';
   if (confirmed) status = 'Confirmed';
-  else if (official.some(m => m.stance === 'denies')) status = 'Denied';
+  else if (official.some(m => m.stance === 'denies' && !superseding.includes(m))) status = 'Denied';
   else if (latest && age >= 21 * 86400000) status = 'Went cold';
   else if (independent.size >= 2) status = 'Corroborated';
   else if (independent.size === 1 && relevant.some(m => isIndependent(m) && m.mainstream)) status = 'Rumor';
   const hasNamed = relevant.some(m => m.sourcing === 'named source');
   const recent = relevant.some(m => timestamp(m) && now.getTime() - timestamp(m) >= 0 && now.getTime() - timestamp(m) <= 72 * 3600000);
   const smokeScore = status === 'Confirmed' ? 100 : status === 'Denied' ? 0 : Math.min(100, Math.min(60, independent.size * 20) + Math.min(15, echoes * 3) + (hasNamed ? 15 : 0) + (recent ? 10 : 0));
-  return { status, smokeScore, independent: independent.size, echoes };
+  const firstConfirm = Math.min(...confirmations.map(timestamp));
+  const later = status === 'Confirmed' ? superseding.filter(m => !timestamp(m) || timestamp(m) >= firstConfirm).sort((a, b) => timestamp(b) - timestamp(a))[0] : undefined;
+  const superseded = later ? { url: later.url, title: later.title, outlet: later.outlet } : null;
+  return { status, smokeScore, independent: independent.size, echoes, superseded };
 }
