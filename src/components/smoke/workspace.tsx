@@ -7,27 +7,31 @@ import { useServerFn } from '@tanstack/react-start';
 import { traceLive, recheckLive, advanceLive, readLive, listLive, watchLive } from '@/lib/live.functions';
 import { liveTraceSchema, type LiveTrace } from '@/lib/live';
 import { toast } from 'sonner';
+import { isCachedCheck } from '@/lib/brief';
 
-type Workspace = { traces: LiveTrace[]; sample: boolean; setSample: (v:boolean)=>void; toggleWatch:(id:string)=>Promise<void>; recheck:(id:string)=>Promise<void>; create:(input:{query:string;entities:string[];window_days:7|30|90})=>Promise<string>; load:(id:string)=>Promise<LiveTrace|null>; error:string; loading:boolean };
+type Workspace = { traces: LiveTrace[]; sample: boolean; setSample: (v:boolean)=>void; toggleWatch:(id:string)=>Promise<void>; recheck:(id:string)=>Promise<void>; create:(input:{query:string;entities:string[];window_days:7|30|90})=>Promise<string>; load:(id:string)=>Promise<LiveTrace|null>; error:string; loading:boolean; reload:()=>void; isCached:(trace:LiveTrace)=>boolean };
 const WorkspaceContext = createContext<Workspace | null>(null);
 export function SmokeProvider({children}:{children:ReactNode}) {
   const [samples,setSamples] = useState(sampleTraces);
   const [live,setLive]=useState<LiveTrace[]>([]);
   const [sample,setSample] = useState(true);
   const [error,setError]=useState(''),[loading,setLoading]=useState(false);
+  const [reloadKey,setReloadKey]=useState(0),[freshChecks,setFreshChecks]=useState<Record<string,string>>({});
+  const reload=()=>setReloadKey(n=>n+1);
+  const isCached=(trace:LiveTrace)=>isCachedCheck(sample,trace.stage,trace.checked_at,freshChecks[trace.id]);
   const createFn=useServerFn(traceLive), recheckFn=useServerFn(recheckLive), advanceFn=useServerFn(advanceLive), readFn=useServerFn(readLive), listFn=useServerFn(listLive), watchFn=useServerFn(watchLive);
   const save=(t:LiveTrace)=>setLive(ts=>[t,...ts.filter(existing=>existing.id!==t.id)]);
   const load=async(id:string)=>{const raw=await readFn({data:{id}});if(!raw)return null;const t=liveTraceSchema.parse(raw);save(t);return t;};
   const drive=async(id:string)=>{
     // One bounded stage per awaited call. Database leases prevent duplicate processing across tabs.
-    for(let remaining=20;remaining>0;remaining--){const t=await load(id);if(!t||['done','error'].includes(t.stage))return;await advanceFn({data:{id}});}
-    await load(id);
+    for(let remaining=20;remaining>0;remaining--){const t=await load(id);if(!t||['done','error'].includes(t.stage)){if(t?.stage==='done')setFreshChecks(checks=>({...checks,[id]:t.checked_at}));return;}await advanceFn({data:{id}});}
+    const t=await load(id);if(t?.stage==='done')setFreshChecks(checks=>({...checks,[id]:t.checked_at}));
   };
-  useEffect(()=>{if(sample)return;let active=true;setLoading(true);setError('');listFn().then(async rows=>{const results=await Promise.all(rows.map(r=>readFn({data:{id:r.id}})));if(active)setLive(results.filter(r=>r!==null).map(r=>liveTraceSchema.parse(r)));}).catch(()=>{if(active)setError('Could not load saved traces. Samples are still available.');}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[sample]);
+  useEffect(()=>{if(sample)return;let active=true;setLoading(true);setError('');listFn().then(async rows=>{const results=await Promise.all(rows.map(r=>readFn({data:{id:r.id}})));if(active)setLive(results.filter(r=>r!==null).map(r=>liveTraceSchema.parse(r)));}).catch(()=>{if(active)setError('Could not load saved traces. Samples are still available.');}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[sample,reloadKey]);
   const create=async(input:{query:string;entities:string[];window_days:7|30|90})=>{const r=await createFn({data:input});await load(r.trace_id);void drive(r.trace_id).catch(()=>{setError('Processing was interrupted. Re-open the trace to check its saved progress.');});return r.trace_id;};
   const toggleWatch=async(id:string)=>{if(sample){setSamples(ts=>ts.map(t=>t.id===id?{...t,watching:!t.watching}:t));return;}const trace=live.find(t=>t.id===id);if(!trace)return;try{await watchFn({data:{id,watching:!trace.watching}});await load(id);}catch{toast.error('Could not save watch selection. Try again.');}};
   const recheck=async(id:string)=>{if(sample){setSamples(ts=>ts.map(t=>t.id===id?{...t,checked_at:new Date().toISOString()}:t));return;}const current=live.find(t=>t.id===id);if(!current||['done','error'].includes(current.stage))await recheckFn({data:{id}});await load(id);await drive(id);};
-  return <WorkspaceContext.Provider value={{traces:sample?samples:live,sample,setSample,toggleWatch,recheck,create,load,error,loading}}>{children}</WorkspaceContext.Provider>;
+  return <WorkspaceContext.Provider value={{traces:sample?samples:live,sample,setSample,toggleWatch,recheck,create,load,error,loading,reload,isCached}}>{children}</WorkspaceContext.Provider>;
 }
 export function useWorkspace() { const value=useContext(WorkspaceContext); if(!value) throw new Error('Smoke workspace is missing'); return value; }
 export function Navigation() {

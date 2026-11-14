@@ -37,3 +37,5 @@ use the editor.
 
 - Process live jobs in bounded, awaited stage calls with durable database leases and idempotent source insertion; this avoids unreliable unawaited Worker tasks and duplicate AI fan-out.
 - Use the user-selected Gemini 4 Argon chat-completions model for structured source classification; preserve its selection during unrelated changes.
+- Keep export source numbering and deterministic spread-map layout in browser-safe presentation helpers so exports and evidence views agree without changing scoring.
+- Track freshness per completed check in the workspace session; database reads alone never make an old trace fresh.

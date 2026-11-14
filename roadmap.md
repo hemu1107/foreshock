@@ -11,3 +11,10 @@
 - [x] Wire live progress polling and saved watchlists while preserving fictional samples.
 - [x] Test live tracing end to end with a real query and verify error recovery.
 Implementation note: processing uses awaited, bounded server stages while the workspace is open, not an unawaited background task. Interrupted traces offer Resume trace.
+
+## Polish pass
+- [x] Make empty, loading and error states actionable across the workspace.
+- [x] Deconflict dense spread maps and cluster echoes.
+- [x] Export complete, numbered markdown briefs.
+- [x] Label saved versus fresh traces without altering persistence.
+- [x] Verify laptop layouts, contrast and keyboard focus with tests and browser checks.
