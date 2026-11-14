@@ -28,3 +28,10 @@ Implementation note: processing uses awaited, bounded server stages while the wo
 - [x] Refine home, saved-trace discovery and shared visual hierarchy.
 - [x] Improve evidence navigation, keyboard access and small-screen layouts.
 - [x] Verify saved live evidence, filters, export and accessibility without new provider calls.
+
+## Visual and feel revamp
+- [x] Apply the serif/sans/mono type system, paper-ink-ember palette and restrained surfaces.
+- [x] Group the trace into answer, proof and context; compact the header and analyst summary.
+- [x] Give the spread map an accessible replay control and the evidence table stable row rhythm.
+- [x] Add restrained motion with skeleton states and reduced-motion support.
+- [x] Verify 1440, 1280, tablet and phone with no sideways page scroll, plus tests.

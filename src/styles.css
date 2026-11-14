@@ -186,7 +186,7 @@ a.featured-trace:hover { border-color: color-mix(in oklab, var(--primary) 40%, v
 .data-table td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
 .data-table tbody tr { transition: background-color 150ms var(--ease); }
 .data-table tbody tr:hover { background: color-mix(in oklab, var(--secondary) 60%, var(--card)); }
-.table-frame { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); overflow-x: auto; box-shadow: var(--shadow-card); }
+.table-frame { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); overflow-x: auto; contain: paint; box-shadow: var(--shadow-card); }
 .claim-link { font-family: var(--font-serif); font-weight: 400; font-size: 19px; line-height: 1.3; letter-spacing: -0.01em; display: flex; align-items: flex-start; gap: 8px; color: var(--foreground); }
 .claim-link:hover { color: var(--primary); }
 .claim-link svg { margin-top: 5px; flex: none; opacity: 0; transition: opacity 150ms var(--ease); }
@@ -211,6 +211,8 @@ a.featured-trace:hover { border-color: color-mix(in oklab, var(--primary) 40%, v
 .entity-chip { display: inline-flex; padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); font-size: 13px; color: var(--muted-foreground); }
 .cached-badge { display: inline-flex; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--muted-foreground); background: var(--secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 2px 7px; }
 .eyebrow { font-family: var(--font-mono); font-size: 13px; color: var(--muted-foreground); }
+.eyebrow-id { overflow-wrap: anywhere; }
+.eyebrow-checked { white-space: nowrap; }
 
 /* Status ladder — fills step by step to the current status. */
 .status-ladder { display: flex; align-items: center; gap: 12px; margin-top: 32px; padding: 16px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow-x: auto; }
