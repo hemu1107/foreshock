@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { stances,sourcings,statuses } from './pipeline';
 import type { Trace } from '@/mocks/sampleTraces';
+import { precedentSchema, type Precedent } from './precedents';
 export const liveTraceSchema=z.object({id:z.string(),query:z.string(),claim:z.string(),entities:z.array(z.string()),window_days:z.number(),stage:z.string(),status:z.enum(statuses),confidence:z.number(),smoke_score:z.number(),summary_md:z.string(),confirm_signals:z.array(z.string()),kill_signals:z.array(z.string()),watch_signals:z.array(z.string()),origin_mention_id:z.string().nullable().transform(v=>v??''),watching:z.boolean(),created_at:z.string(),checked_at:z.string(),error:z.string().nullable().optional(),paused:z.boolean().optional(),mentions:z.array(z.object({id:z.string(),url:z.string(),title:z.string(),domain:z.string(),outlet:z.string(),published_at:z.string().nullable(),snippet:z.string(),attribution_quotes:z.array(z.string()),stance:z.enum(stances),sourcing:z.enum(sourcings),attributes_to:z.string().nullable(),is_origin:z.boolean(),is_independent:z.boolean(),paywalled:z.boolean(),involved_party:z.boolean(),mainstream:z.boolean(),source_api:z.enum(['you_search','you_contents','you_research','treg','opencrawl'])})),history:z.array(z.object({status:z.enum(statuses),reason:z.string(),at:z.string()}))});
-export type LiveTrace=Trace&{error?:string|null|undefined;paused?:boolean|undefined};
-export const stageIndex=(stage:string)=>Math.max(0,['queued','searching','reading','classifying','verifying','scoring'].indexOf(stage)-1);
+export const traceWithPrecedentsSchema=liveTraceSchema.extend({precedents:z.array(precedentSchema).default([])});
+export type LiveTrace=Trace&{error?:string|null|undefined;paused?:boolean|undefined;precedents?:Precedent[]};
+export const stageIndex=(stage:string)=>stage==='precedents'?3:Math.max(0,['queued','searching','reading','classifying','verifying','scoring'].indexOf(stage)-1);

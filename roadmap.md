@@ -1,4 +1,9 @@
 # Smoke
+## OpenCrawl precedents
+- [x] Add connector-only ledger searches, bounded fetching and resilient parsing.
+- [x] Store and display precedents without affecting rumor scoring.
+- [x] Test rules and verify a live trace with OpenCrawl (successful search returned zero matching cases; card correctly hidden).
+
 - [x] Build the trace workspace, shared navigation and sample controls.
 - [x] Add two fictional traces, deterministic scoring and rule tests.
 - [x] Build trace results, spread map, evidence filters, watchlist and method.

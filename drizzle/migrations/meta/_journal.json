@@ -8,6 +8,13 @@
       "when": 1794676507664,
       "tag": "0000_smoke_live_pipeline",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794678591931,
+      "tag": "0001_smoke_ledger_precedents",
+      "breakpoints": true
     }
   ]
 }

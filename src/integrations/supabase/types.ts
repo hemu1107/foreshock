@@ -91,6 +91,62 @@ export type Database = {
           },
         ]
       }
+      precedents: {
+        Row: {
+          case_title: string
+          created_at: string
+          days_to_resolution: number | null
+          deal_type: string
+          document_id: string
+          first_reported_at: string | null
+          id: string
+          outcome: string
+          outlet: string
+          resolution_source: string | null
+          resolved: boolean
+          sourcing: string
+          trace_id: string
+        }
+        Insert: {
+          case_title: string
+          created_at?: string
+          days_to_resolution?: number | null
+          deal_type?: string
+          document_id: string
+          first_reported_at?: string | null
+          id?: string
+          outcome?: string
+          outlet?: string
+          resolution_source?: string | null
+          resolved?: boolean
+          sourcing?: string
+          trace_id: string
+        }
+        Update: {
+          case_title?: string
+          created_at?: string
+          days_to_resolution?: number | null
+          deal_type?: string
+          document_id?: string
+          first_reported_at?: string | null
+          id?: string
+          outcome?: string
+          outlet?: string
+          resolution_source?: string | null
+          resolved?: boolean
+          sourcing?: string
+          trace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "precedents_trace_id_fkey"
+            columns: ["trace_id"]
+            isOneToOne: false
+            referencedRelation: "traces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       status_history: {
         Row: {
           at: string

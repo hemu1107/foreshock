@@ -112,6 +112,9 @@
 .evidence-table td { padding:14px 12px; font-size:10px; } .evidence-table th { padding:10px 12px; font-size:9px; }
 .evidence-table .source-title { max-width:260px; line-height:1.65; font-size:11px; }
 .verdict { border-top:2px solid var(--foreground); padding-top:20px; }
+.ledger-section { margin-top:32px; padding-top:20px; border-top:1px solid var(--border); overflow-wrap:anywhere; }
+.ledger-cases > li { padding:16px 0; border-bottom:1px solid var(--border); }
+.ledger-section a { color:var(--action); }
 .verdict p { font-size:12px; line-height:1.9; }
 .verdict h3 { font-size:11px; font-weight:600; margin:24px 0 12px; }
 .verdict li { color:var(--muted-foreground); font-size:11px; line-height:1.7; display:flex; align-items:flex-start; gap:8px; margin-bottom:8px; }

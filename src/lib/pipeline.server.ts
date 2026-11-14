@@ -7,6 +7,8 @@ import { youSearch,youContents,youResearch,classify,tregSocial,opencrawlSources,
 import { freshness,buildQueries,attributionQuotes,canonicalUrl,publicUrl,selectOrigin,verdictSchema,stances,sourcings } from './pipeline';
 import { isIndependent,scoreMentions,type Mention } from './scoring';
 import { z } from 'zod';
+import { opencrawlPrecedents } from './opencrawl.server';
+import { precedentQueries } from './precedents';
 const rowSchema=z.object({id:z.string(),url:z.string(),title:z.string(),domain:z.string(),outlet:z.string(),published_at:z.string().nullable(),snippet:z.string(),attribution_quotes:z.array(z.string()),stance:z.enum(stances),sourcing:z.enum(sourcings),attributes_to:z.string().nullable(),is_origin:z.boolean(),is_independent:z.boolean(),paywalled:z.boolean(),source_api:z.enum(['you_search','you_contents','you_research','treg','opencrawl']),involved_party:z.boolean(),mainstream:z.boolean(),classified:z.boolean(),contents_read:z.boolean()});
 function checked<T>(result:{data:T;error:{message:string}|null}):T { if(result.error)throw new Error('Could not save or load trace evidence.');return result.data; }
 export function publicDb(){const url=process.env['SUPABASE_URL'],key=process.env['SUPABASE_PUBLISHABLE_KEY'];if(!url||!key)throw new Error('Cloud configuration is unavailable.');return createClient<Database>(url,key,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:(input,init)=>{const h=new Headers(init?.headers);if(key.startsWith('sb_')&&h.get('Authorization')===`Bearer ${key}`)h.delete('Authorization');h.set('apikey',key);return fetch(input,{...init,headers:h});}}});}
@@ -33,7 +35,14 @@ export async function processStage(id:string) {
  } else if(trace.stage==='classifying') {
   const pending=(await all()).filter(m=>!m.classified).slice(0,20);
   if(pending.length){const batches=[pending.slice(0,10),pending.slice(10,20)].filter(b=>b.length);const results=await Promise.all(batches.map(b=>classify(trace.claim,b)));for(const result of results.flat()){const original=pending.find(m=>m.id===result.id);if(!original)continue;const attributes=result.attributes_to?canonicalUrl(result.attributes_to)?.replace(/^https?:\/\//,'').split('/')[0]??result.attributes_to:null;const sourcing=original.sourcing==='social'?'social':attributes?'cites outlet':result.sourcing;checked(await db.from('mentions').update({...result,sourcing,attributes_to:attributes,classified:true,is_independent:isIndependent({...original,...result,sourcing,attributes_to:attributes})}).eq('id',result.id));}}
-  if(!(await all()).some(m=>!m.classified))await update({stage:trace.research_result?'scoring':'verifying'});
+   if(!(await all()).some(m=>!m.classified))await update({stage:trace.research_result?'scoring':'precedents'});
+  } else if(trace.stage==='precedents') {
+   try {
+    const origin=selectOrigin(await all());
+    const cases=await opencrawlPrecedents(precedentQueries(trace.claim,entities,origin?.outlet));
+    if(cases.length)checked(await db.from('precedents').upsert(cases.map(c=>({...c,trace_id:id})),{onConflict:'trace_id,document_id'}));
+   } catch { console.warn('opencrawl_precedents',{outcome:'save_unavailable'}); }
+   await update({stage:'verifying'});
  } else if(trace.stage==='verifying') {
   try{const result=await youResearch(trace.claim,await all(),f);await append(result.mentions);await update({research_result:result.verdict,stage:'classifying'});}
   catch(e){if((e instanceof ProviderFailure&&[401,402,403,429].includes(e.status))||e instanceof GatewayError)throw e;console.warn('Research unavailable; finishing with deterministic evidence rules.');await update({research_result:{unavailable:true},stage:'scoring'});}

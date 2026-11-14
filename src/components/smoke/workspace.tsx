@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { sampleTraces, type Trace } from '@/mocks/sampleTraces';
 import { useServerFn } from '@tanstack/react-start';
 import { traceLive, recheckLive, advanceLive, readLive, listLive, watchLive } from '@/lib/live.functions';
-import { liveTraceSchema, type LiveTrace } from '@/lib/live';
+import { traceWithPrecedentsSchema as liveTraceSchema, type LiveTrace } from '@/lib/live';
 import { toast } from 'sonner';
 import { isCachedCheck } from '@/lib/brief';
 
