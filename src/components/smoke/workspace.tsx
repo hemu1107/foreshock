@@ -35,7 +35,7 @@ export function SmokeProvider({children}:{children:ReactNode}) {
   const recheck=async(id:string)=>{if(sample){setSamples(ts=>ts.map(t=>t.id===id?{...t,checked_at:new Date().toISOString()}:t));return;}const current=live.find(t=>t.id===id);if(!current||['done','error'].includes(current.stage))await recheckFn({data:{id}});await load(id);await drive(id);};
   return <WorkspaceContext.Provider value={{traces:sample?samples:live,sample,setSample,toggleWatch,recheck,create,load,error,loading,reload,isCached}}>{children}</WorkspaceContext.Provider>;
 }
-export function useWorkspace() { const value=useContext(WorkspaceContext); if(!value) throw new Error('Fourshock workspace is missing'); return value; }
+export function useWorkspace() { const value=useContext(WorkspaceContext); if(!value) throw new Error('Foreshock workspace is missing'); return value; }
 function ThemeToggle() {
   const [dark,setDark]=useState(false);
   useEffect(()=>{setDark(document.documentElement.classList.contains('dark'));},[]);
@@ -43,7 +43,7 @@ function ThemeToggle() {
     const next=!dark;
     setDark(next);
     document.documentElement.classList.toggle('dark',next);
-    try{localStorage.setItem('fourshock-theme',next?'dark':'light');}catch{/* private mode */}
+    try{localStorage.setItem('foreshock-theme',next?'dark':'light');}catch{/* private mode */}
   };
   return <button type="button" className="theme-toggle" onClick={toggle} aria-pressed={dark} aria-label={dark?'Switch to light mode':'Switch to dark mode'}>{dark?<Sun/>:<Moon/>}</button>;
 }
@@ -53,7 +53,7 @@ export function Navigation() {
   const [time,setTime]=useState('');
   useEffect(()=>{const tick=()=>setTime(new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',timeZoneName:'short'}));tick();const i=setInterval(tick,30000);return()=>clearInterval(i);},[]);
   return <header className="app-nav"><div className="nav-inner">
-    <Link to="/" className="wordmark" aria-label="Fourshock home"><span className="fourshock-mark" aria-hidden="true"><i/><i/><i/><i/></span>fourshock</Link>
+    <Link to="/" className="wordmark" aria-label="Foreshock home"><span className="foreshock-mark" aria-hidden="true"><i/><i/><i/><i/></span>foreshock</Link>
     <nav className="nav-links" aria-label="Main navigation">
       <Link to="/" aria-current={path==='/'||path.startsWith('/trace/')?'page':undefined} className={`nav-link ${path==='/'||path.startsWith('/trace/')?'active':''}`}><Radar/>Trace</Link>
       <Link to="/watchlist" aria-current={path==='/watchlist'?'page':undefined} className={`nav-link ${path==='/watchlist'?'active':''}`}><Bookmark/>Watchlist{traces.some(t=>t.watching)&&<span className="mono text-primary text-[13px]">{traces.filter(t=>t.watching).length}</span>}</Link>

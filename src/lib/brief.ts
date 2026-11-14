@@ -40,7 +40,7 @@ export function exportMarkdownBrief(trace: Trace, sample: boolean, exportedAt: D
   const signals = (items: string[]) => items.length ? items.map(s => `- ${numberCitations(s, trace)}`).join('\n') : '- Not available from the current evidence.';
   const research = sources.filter(s => s.mention.source_api === 'you_research');
   return [
-    '# Fourshock intelligence brief',
+    '# Foreshock intelligence brief',
     sample ? '> FICTIONAL SAMPLE — not real intelligence. Links open outlet homepages.' : '> Rumor intelligence — the claim is not an established fact.',
     `## Claim\n${trace.claim}`,
     `## Assessment\n- **Status:** ${trace.status}\n- **Confidence in assigned status:** ${trace.confidence}% (not the probability the claim is true)\n- **Evidence Score:** ${trace.smoke_score}/100\n- **Independent sources:** ${score.independent}\n- **Echo count:** ${score.echoes}\n- **Last checked:** ${trace.checked_at}`,

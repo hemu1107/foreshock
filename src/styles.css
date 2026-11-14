@@ -457,7 +457,7 @@ a.featured-trace:hover { border-color: color-mix(in oklab, var(--primary) 40%, v
 .trace-submit svg { transition: transform 200ms var(--ease); }
 .trace-submit:hover svg { transform: translateX(3px); }
 
-/* Fourshock: four converging signal streams, never a decoration over evidence. */
+/* Foreshock: four converging signal streams, never a decoration over evidence. */
 .signal-background { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--gradient-page); background-size: 180% 180%; animation: atmosphere-drift 28s ease-in-out infinite alternate; }
 .signal-depth-layer { position: absolute; inset: -40px 0 -160px; translate: 0 var(--scroll-depth, 0px); will-change: translate; }
 .reading-progress { position: fixed; inset: 0 0 auto; height: 2px; z-index: 60; background: var(--gradient-line); transform: scaleX(var(--reading-progress, 0)); transform-origin: left; pointer-events: none; }
@@ -474,9 +474,9 @@ body { isolation: isolate; background: transparent; }
 .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); color: var(--muted-foreground); cursor: pointer; transition: color 150ms var(--ease), border-color 150ms var(--ease); }
 .theme-toggle:hover { color: var(--primary); border-color: color-mix(in oklab, var(--primary) 40%, var(--border)); }
 .app-nav { background: var(--gradient-surface); }
-.fourshock-mark { display: inline-flex; align-items: center; gap: 3px; height: 26px; width: 25px; }
-.fourshock-mark i { display: block; width: 4px; border-radius: 2px; background: var(--gradient-brand); height: 10px; }
-.fourshock-mark i:nth-child(2) { height: 26px; } .fourshock-mark i:nth-child(3) { height: 19px; background: var(--signal-copper); } .fourshock-mark i:nth-child(4) { height: 13px; }
+.foreshock-mark { display: inline-flex; align-items: center; gap: 3px; height: 26px; width: 25px; }
+.foreshock-mark i { display: block; width: 4px; border-radius: 2px; background: var(--gradient-brand); height: 10px; }
+.foreshock-mark i:nth-child(2) { height: 26px; } .foreshock-mark i:nth-child(3) { height: 19px; background: var(--signal-copper); } .foreshock-mark i:nth-child(4) { height: 13px; }
 .wordmark { gap: 10px; }
 .home-heading > span { color: var(--primary); }
 .trace-submit { background: var(--gradient-brand); color: var(--primary-foreground); }

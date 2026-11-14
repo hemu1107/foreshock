@@ -1,6 +1,6 @@
 # Changing the design
 
-This guide is for someone editing how Fourshock looks and feels without touching
+This guide is for someone editing how Foreshock looks and feels without touching
 what it decides.
 
 ## Start here

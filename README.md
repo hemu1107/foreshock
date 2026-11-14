@@ -1,9 +1,9 @@
-# Fourshock
+# Foreshock
 
 **See the signals before the shock.**
 
-Fourshock is a weak-signal intelligence tool for business and tech rumors. Paste a
-claim and Fourshock searches the live web, reads the articles, finds who reported it
+Foreshock is a weak-signal intelligence tool for business and tech rumors. Paste a
+claim and Foreshock searches the live web, reads the articles, finds who reported it
 first, and separates independent reporting from the echo that follows. Ten
 articles that all repeat one scoop count as one source, not ten.
 
