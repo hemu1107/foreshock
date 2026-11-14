@@ -1,4 +1,7 @@
 # Fourshock
+## Immersive scroll experience
+- [x] Add shared scroll reveals, staggered items, subtle background depth and reading progress across pages.
+- [x] Verify saved pages, pause, reduced motion and small-screen scrolling without live traces.
 ## Fourshock rebrand
 - [x] Update visible identity, page metadata and exported briefs without changing evidence rules.
 - [x] Apply a shared gradient theme and controllable signal-inspired background motion.

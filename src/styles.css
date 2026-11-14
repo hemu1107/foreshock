@@ -416,17 +416,15 @@ a.featured-trace:hover { border-color: color-mix(in oklab, var(--primary) 40%, v
 @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes growY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 45%, transparent); } 100% { box-shadow: 0 0 0 8px transparent; } }
-.reveal-page > * { animation: rise 400ms var(--ease) both; }
-.reveal-page > *:nth-child(2) { animation-delay: 60ms; }
-.reveal-page > *:nth-child(3) { animation-delay: 120ms; }
-.reveal-page > *:nth-child(4) { animation-delay: 180ms; }
-.reveal-page > *:nth-child(n+5) { animation-delay: 240ms; }
+.reveal-page > .workspace-heading { animation: rise 400ms var(--ease) both; }
 .featured-trace, .trace-library tr, .example-chip, .kpi { transition: border-color 150ms var(--ease), background-color 150ms var(--ease), transform 200ms var(--ease), box-shadow 150ms var(--ease); }
 .trace-submit svg { transition: transform 200ms var(--ease); }
 .trace-submit:hover svg { transform: translateX(3px); }
 
 /* Fourshock: four converging signal streams, never a decoration over evidence. */
 .signal-background { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--gradient-page); background-size: 180% 180%; animation: atmosphere-drift 28s ease-in-out infinite alternate; }
+.signal-depth-layer { position: absolute; inset: -40px 0 -160px; translate: 0 var(--scroll-depth, 0px); will-change: translate; }
+.reading-progress { position: fixed; inset: 0 0 auto; height: 2px; z-index: 60; background: var(--gradient-line); transform: scaleX(var(--reading-progress, 0)); transform-origin: left; pointer-events: none; }
 body { isolation: isolate; background: transparent; }
 .signal-mesh { position: absolute; inset: 0; opacity: 0.22; background-image: linear-gradient(color-mix(in oklab, var(--primary) 16%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--primary) 16%, transparent) 1px, transparent 1px); background-size: 80px 80px; mask-image: linear-gradient(to bottom, transparent, var(--foreground) 40%, transparent); }
 .signal-stream { position: absolute; width: 140%; left: -20%; height: 140px; border-top: 1px solid color-mix(in oklab, var(--primary) 14%, transparent); border-radius: 50%; transform: rotate(-14deg); }
@@ -545,4 +543,5 @@ body { isolation: isolate; background: transparent; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  .signal-depth-layer { translate: none; will-change: auto; }
 }
