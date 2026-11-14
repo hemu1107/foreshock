@@ -1,6 +1,6 @@
 # Changing the design
 
-This guide is for someone editing how Smoke looks and feels without touching
+This guide is for someone editing how Fourshock looks and feels without touching
 what it decides.
 
 ## Start here
@@ -24,16 +24,16 @@ Reusable primitives (button, card, badge, dialog, tabs…) are in
 
 Everything visual is defined once in `src/styles.css`:
 
-- **Type** — `--font-sans` (Inter), `--font-serif` (Newsreader), `--font-mono`
+- **Type** — `--font-sans` (Inter), `--font-serif` (Instrument Serif), `--font-mono`
   (JetBrains Mono). Fonts load from a `<link>` in `src/routes/__root.tsx`, not
   from a CSS `@import`.
 - **Surface** — `--background`, `--card`, `--secondary`, `--border`,
   `--muted-foreground`.
-- **Action** — `--action` / `--primary` (the ember accent), `--accent`.
+- **Action** — `--primary` (teal), `--accent`; shared `--gradient-*` tokens provide the signal-inspired theme.
 - **Status** — `--whisper`, `--rumor`, `--corroborated`, `--confirmed`,
   `--denied`, `--cold`, each with a darker `-ink` variant for text on light
   backgrounds.
-- **Radius** — `--radius` is 6px. **Focus** — `--shadow-focus`.
+- **Radius** — use the shared radius tokens. **Focus** — `--shadow-focus`.
 
 Use the token, never a literal: `text-foreground`, `bg-card`,
 `border-border`, `text-confirmed`. Hardcoded values like `text-white`,
@@ -42,13 +42,13 @@ status color.
 
 ## Rules that keep the tool trustworthy
 
-1. **Do not change a verdict with a design change.** Status and Smoke Score come
+1. **Do not change a verdict with a design change.** Status and Evidence Score come
    from `src/lib/scoring.ts` and the rules in `src/lib/official.ts`. Visual work
    should not edit those files. If a label or scale needs to change, that is a
    product decision — raise it.
 2. **Status colors mean specific things.** `confirmed` is green, `denied` is
    red, `cold` is grey-blue. Keep them distinct from each other and from the
-   ember action color, and keep the `-ink` variants for text so contrast holds.
+   teal action color, and keep the `-ink` variants for text so contrast holds.
 3. **Accessibility is part of the design.** Visible keyboard focus
    (`:focus-visible` and `--shadow-focus`), the skip link, `aria-label`s on
    controls, and the `prefers-reduced-motion` rule in `src/styles.css` all stay

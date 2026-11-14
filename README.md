@@ -1,14 +1,14 @@
-# Smoke
+# Fourshock
 
-**Find the smoke before the fire.**
+**See the signals before the shock.**
 
-Smoke is a rumor-tracing intelligence tool for business and tech rumors. Paste a
-claim and Smoke searches the live web, reads the articles, finds who reported it
+Fourshock is a weak-signal intelligence tool for business and tech rumors. Paste a
+claim and Fourshock searches the live web, reads the articles, finds who reported it
 first, and separates independent reporting from the echo that follows. Ten
 articles that all repeat one scoop count as one source, not ten.
 
 The output is a verdict on a fixed scale — **Whisper → Rumor → Corroborated →
-Confirmed** (with **Denied** and **Went cold** for the dead ends) — plus a Smoke
+Confirmed** (with **Denied** and **Went cold** for the dead ends) — plus an Evidence
 Score from 0 to 100, a spread map of who said what and when, a searchable
 evidence table, and a one-click markdown brief.
 
@@ -56,7 +56,7 @@ live web and the ledger are **not** in this repo — see below.
    `src/lib/official.ts` override the model's labels, so status stays explainable.
 5. **Ledger** — OpenCrawl case searches run in an isolated eight-second call
    before research; a failure never blocks a trace and never changes the score.
-6. **Score** — `src/lib/scoring.ts` produces the status and Smoke Score from the
+6. **Score** — `src/lib/scoring.ts` produces the status and Evidence Score from the
    surviving evidence.
 
 Processing happens in bounded, awaited server stages with a durable database

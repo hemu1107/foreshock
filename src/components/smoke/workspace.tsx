@@ -35,14 +35,14 @@ export function SmokeProvider({children}:{children:ReactNode}) {
   const recheck=async(id:string)=>{if(sample){setSamples(ts=>ts.map(t=>t.id===id?{...t,checked_at:new Date().toISOString()}:t));return;}const current=live.find(t=>t.id===id);if(!current||['done','error'].includes(current.stage))await recheckFn({data:{id}});await load(id);await drive(id);};
   return <WorkspaceContext.Provider value={{traces:sample?samples:live,sample,setSample,toggleWatch,recheck,create,load,error,loading,reload,isCached}}>{children}</WorkspaceContext.Provider>;
 }
-export function useWorkspace() { const value=useContext(WorkspaceContext); if(!value) throw new Error('Smoke workspace is missing'); return value; }
+export function useWorkspace() { const value=useContext(WorkspaceContext); if(!value) throw new Error('Fourshock workspace is missing'); return value; }
 export function Navigation() {
   const {sample,traces}=useWorkspace();
   const path=useRouterState({select:s=>s.location.pathname});
   const [time,setTime]=useState('');
   useEffect(()=>{const tick=()=>setTime(new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',timeZoneName:'short'}));tick();const i=setInterval(tick,30000);return()=>clearInterval(i);},[]);
   return <header className="app-nav"><div className="nav-inner">
-    <Link to="/" className="wordmark" aria-label="Smoke home"><span className="logo-dot"/>smoke</Link>
+    <Link to="/" className="wordmark" aria-label="Fourshock home"><span className="fourshock-mark" aria-hidden="true"><i/><i/><i/><i/></span>fourshock</Link>
     <nav className="nav-links" aria-label="Main navigation">
       <Link to="/" aria-current={path==='/'||path.startsWith('/trace/')?'page':undefined} className={`nav-link ${path==='/'||path.startsWith('/trace/')?'active':''}`}><Radar/>Trace</Link>
       <Link to="/watchlist" aria-current={path==='/watchlist'?'page':undefined} className={`nav-link ${path==='/watchlist'?'active':''}`}><Bookmark/>Watchlist{traces.some(t=>t.watching)&&<span className="mono text-primary text-[13px]">{traces.filter(t=>t.watching).length}</span>}</Link>
@@ -51,5 +51,5 @@ export function Navigation() {
     <div className="nav-right"><span className="data-time">Data as of {time||'—'}</span>{sample&&<span className="mono text-[13px] text-primary">DEMO DATA</span>}<span className="powered-by">Powered by <span className="font-semibold text-foreground">You.com</span></span></div>
   </div></header>;
 }
-export function Footer({sources,live=false}:{sources?:number;live?:boolean}) { return <footer className="site-footer"><span>{sources ? live ? `Retrieved ${sources} sources via You.com Search, Contents and Research` : `${sources} fictional sample sources · No live retrieval performed` : 'Find the smoke before the fire.'}</span><div className="flex flex-wrap items-center gap-x-2 gap-y-1"><span>Built at Ground Truth NYC</span><span aria-hidden>·</span><span>Live web by You.com</span><span aria-hidden>·</span><span>Ledger by OpenCrawl</span><span aria-hidden>·</span><Link to="/method" className="flex items-center gap-1">Methodology<ArrowUpRight/></Link></div></footer>; }
+export function Footer({sources,live=false}:{sources?:number;live?:boolean}) { return <footer className="site-footer"><span>{sources ? live ? `Retrieved ${sources} sources via You.com Search, Contents and Research` : `${sources} fictional sample sources · No live retrieval performed` : 'See the signals before the shock.'}</span><div className="flex flex-wrap items-center gap-x-2 gap-y-1"><span>Built at Ground Truth NYC</span><span aria-hidden>·</span><span>Live web by You.com</span><span aria-hidden>·</span><span>Ledger by OpenCrawl</span><span aria-hidden>·</span><Link to="/method" className="flex items-center gap-1">Methodology<ArrowUpRight/></Link></div></footer>; }
 export function SampleNotice() { return <div className="notice"><FlaskConical/><span>Fictional sample. Companies and reports are illustrative; source links open outlet homepages.</span></div>; }

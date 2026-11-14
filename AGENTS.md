@@ -45,3 +45,4 @@ use the editor.
 - Keep saved-trace discovery and evidence search in browser-side presentation components; filtering must not launch provider calls or modify evidence scoring.
 - Aggregate weak signals with pure helpers in src/lib/signals.ts; the signal stack is presentation only and never changes status or score.
 - Keep wide tables inside a clipped, paint-contained scroll container so a min-width table can never widen the page; the page itself must never scroll sideways at any viewport.
+- Mount decorative background motion once in the root shell, with CSS semantic gradient tokens, reduced-motion support and a pause control; all pages share the treatment without affecting evidence logic.

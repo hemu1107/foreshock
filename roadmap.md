@@ -1,4 +1,8 @@
-# Smoke
+# Fourshock
+## Fourshock rebrand
+- [x] Update visible identity, page metadata and exported briefs without changing evidence rules.
+- [x] Apply a shared gradient theme and controllable signal-inspired background motion.
+- [x] Verify saved-trace navigation, small screens, reduced motion and tests.
 ## OpenCrawl precedents
 - [x] Add connector-only ledger searches, bounded fetching and resilient parsing.
 - [x] Store and display precedents without affecting rumor scoring.

@@ -7,7 +7,7 @@ export function Precedents({ rows, outlet }: { rows: Precedent[]; outlet?: strin
   const summary = precedentSummary(rows, outlet);
   return <section className="ledger-section" aria-labelledby="ledger-title">
     <div className="eyebrow mb-2">Precedents</div>
-    <h2 id="ledger-title">From the Smoke ledger</h2>
+    <h2 id="ledger-title">From the Fourshock ledger</h2>
     <p className="mt-3">{summary.confirmed} of {summary.total} similar past rumors were confirmed</p>
     {summary.outlet && <p className="meta mt-1">{summary.outlet.name}: {summary.outlet.confirmed} of {summary.outlet.total} confirmed</p>}
     <ul className="ledger-cases">{rows.map(row => <li key={row.document_id}>
