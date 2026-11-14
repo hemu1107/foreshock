@@ -1,0 +1,21 @@
+import { describe, it, expect } from 'vitest';
+import { scoreMentions, type Mention } from './scoring';
+import { registrableDomain } from './domains';
+const now = new Date('2026-11-14T17:00:00Z');
+const m = (extra: Partial<Mention> = {}): Mention => ({id:'1',url:'https://reuters.com',title:'Test',domain:'reuters.com',outlet:'Reuters',published_at:'2026-11-14T10:00:00Z',snippet:'',attribution_quotes:[],stance:'reports',sourcing:'anonymous source',attributes_to:null,is_origin:false,is_independent:true,paywalled:false,mainstream:true,source_api:'you_search',...extra});
+describe('Smoke scoring rules', () => {
+  it('does not count echoes as corroboration',()=>expect(scoreMentions([m(),...Array.from({length:9},()=>m({domain:'cnbc.com',sourcing:'cites outlet',attributes_to:'reuters.com'}))],now)).toMatchObject({status:'Rumor',independent:1,echoes:9,smokeScore:45}));
+  it('counts distinct registrable domains only',()=>expect(scoreMentions([m(),m({domain:'news.reuters.com'})],now).independent).toBe(1));
+  it('recognizes multi-part public suffixes',()=>expect(registrableDomain('news.company.co.uk')).toBe('company.co.uk'));
+  it('requires two independent sources for corroboration',()=>expect(scoreMentions([m(),m({domain:'bloomberg.com'})],now).status).toBe('Corroborated'));
+  it('confirms involved-party official confirmation at score 100',()=>expect(scoreMentions([m({sourcing:'filing',stance:'confirms',involved_party:true})],now)).toMatchObject({status:'Confirmed',smokeScore:100}));
+  it('does not treat an unrelated party as official confirmation',()=>expect(scoreMentions([m({sourcing:'official statement',stance:'confirms',involved_party:false})],now).status).toBe('Rumor'));
+  it('denies an official denial at score 0',()=>expect(scoreMentions([m({sourcing:'official statement',stance:'denies',involved_party:true})],now)).toMatchObject({status:'Denied',smokeScore:0}));
+  it('allows a later confirmation to override denial',()=>expect(scoreMentions([m({sourcing:'official statement',stance:'denies',involved_party:true,published_at:'2026-11-13T10:00:00Z'}),m({sourcing:'filing',stance:'confirms',involved_party:true})],now).status).toBe('Confirmed'));
+  it('goes cold at 21 days',()=>expect(scoreMentions([m({published_at:'2026-10-24T17:00:00Z'})],now).status).toBe('Went cold'));
+  it('keeps confirmed status even when old',()=>expect(scoreMentions([m({published_at:'2026-10-01T10:00:00Z',sourcing:'filing',stance:'confirms',involved_party:true})],now).status).toBe('Confirmed'));
+  it('classifies social-only evidence as Whisper',()=>expect(scoreMentions([m({sourcing:'social',mainstream:false})],now).status).toBe('Whisper'));
+  it('caps independent points at 60 and echo points at 15; adds named 15 and recent 10',()=>expect(scoreMentions([...['a.com','b.com','c.com','d.com'].map(domain=>m({domain,sourcing:'named source'})),...Array.from({length:10},()=>m({sourcing:'cites outlet',attributes_to:'a.com'}))],now).smokeScore).toBe(100));
+  it('adds recency points only within 72 hours',()=>expect(scoreMentions([m({published_at:'2026-11-11T16:59:00Z'})],now).smokeScore).toBe(20));
+  it('does not count attributed original reporting as independent',()=>expect(scoreMentions([m({attributes_to:'bloomberg.com'})],now).independent).toBe(0));
+});

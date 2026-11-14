@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Keep this stage entirely sample-driven and browser-safe; do not call external APIs or provision a backend until requested.
+- Centralize rumor types, registrable-domain classification and deterministic scoring in `src/lib`; the future backend must reuse these rules.
+- Provide sample state through a shared React provider, with no persistent storage; this keeps the demo independent of services.
+- Use dedicated TanStack content routes and shared evidence components; each content route owns its metadata.

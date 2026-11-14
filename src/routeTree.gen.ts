@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MethodRouteImport } from './routes/method'
+import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as TraceIdRouteImport } from './routes/trace.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MethodRoute = MethodRouteImport.update({
+  id: '/method',
+  path: '/method',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WatchlistRoute = WatchlistRouteImport.update({
+  id: '/watchlist',
+  path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TraceIdRoute = TraceIdRouteImport.update({
+  id: '/trace/$id',
+  path: '/trace/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/method': typeof MethodRoute
+  '/watchlist': typeof WatchlistRoute
+  '/trace/$id': typeof TraceIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/method': typeof MethodRoute
+  '/watchlist': typeof WatchlistRoute
+  '/trace/$id': typeof TraceIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/method': typeof MethodRoute
+  '/watchlist': typeof WatchlistRoute
+  '/trace/$id': typeof TraceIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/method' | '/watchlist' | '/trace/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/method' | '/watchlist' | '/trace/$id'
+  id: '__root__' | '/' | '/method' | '/watchlist' | '/trace/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MethodRoute: typeof MethodRoute
+  WatchlistRoute: typeof WatchlistRoute
+  TraceIdRoute: typeof TraceIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/method': {
+      id: '/method'
+      path: '/method'
+      fullPath: '/method'
+      preLoaderRoute: typeof MethodRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/watchlist': {
+      id: '/watchlist'
+      path: '/watchlist'
+      fullPath: '/watchlist'
+      preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trace/$id': {
+      id: '/trace/$id'
+      path: '/trace/$id'
+      fullPath: '/trace/$id'
+      preLoaderRoute: typeof TraceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MethodRoute: MethodRoute,
+  WatchlistRoute: WatchlistRoute,
+  TraceIdRoute: TraceIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
