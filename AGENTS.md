@@ -41,3 +41,5 @@ use the editor.
 - Track freshness per completed check in the workspace session; database reads alone never make an old trace fresh.
 - Fetch ledger precedents in an isolated, eight-second server-only MCP operation before research; failures never block trace processing or influence scoring.
 - Apply deterministic official-source, superseded and echo/independent rules in `src/lib/official.ts` after AI classification; they override model labels so status stays explainable.
+
+- Keep saved-trace discovery and evidence search in browser-side presentation components; filtering must not launch provider calls or modify evidence scoring.

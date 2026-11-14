@@ -23,3 +23,8 @@ Implementation note: processing uses awaited, bounded server stages while the wo
 - [x] Export complete, numbered markdown briefs.
 - [x] Label saved versus fresh traces without altering persistence.
 - [x] Verify laptop layouts, contrast and keyboard focus with tests and browser checks.
+
+## Evidence-first design and accessibility
+- [x] Refine home, saved-trace discovery and shared visual hierarchy.
+- [x] Improve evidence navigation, keyboard access and small-screen layouts.
+- [x] Verify saved live evidence, filters, export and accessibility without new provider calls.

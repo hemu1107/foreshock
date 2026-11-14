@@ -44,9 +44,9 @@ export function Navigation() {
   return <header className="app-nav"><div className="nav-inner">
     <Link to="/" className="wordmark" aria-label="Smoke home"><span className="logo-dot"/>smoke</Link>
     <nav className="nav-links" aria-label="Main navigation">
-      <Link to="/" className={`nav-link ${path==='/'||path.startsWith('/trace/')?'active':''}`}><Radar/>Trace</Link>
-      <Link to="/watchlist" className={`nav-link ${path==='/watchlist'?'active':''}`}><Bookmark/>Watchlist{traces.some(t=>t.watching)&&<span className="mono text-primary text-[10px]">{traces.filter(t=>t.watching).length}</span>}</Link>
-      <Link to="/method" className={`nav-link ${path==='/method'?'active':''}`}><BookOpen/>Method</Link>
+      <Link to="/" aria-current={path==='/'||path.startsWith('/trace/')?'page':undefined} className={`nav-link ${path==='/'||path.startsWith('/trace/')?'active':''}`}><Radar/>Trace</Link>
+      <Link to="/watchlist" aria-current={path==='/watchlist'?'page':undefined} className={`nav-link ${path==='/watchlist'?'active':''}`}><Bookmark/>Watchlist{traces.some(t=>t.watching)&&<span className="mono text-primary text-[10px]">{traces.filter(t=>t.watching).length}</span>}</Link>
+      <Link to="/method" aria-current={path==='/method'?'page':undefined} className={`nav-link ${path==='/method'?'active':''}`}><BookOpen/>Method</Link>
     </nav>
     <div className="nav-right"><span className="mono text-[10px] text-muted-foreground data-time">Data as of {time||'—'}</span>{sample&&<span className="mono text-[10px] text-primary">DEMO DATA</span>}<span className="powered-by text-[10px] text-muted-foreground">Powered by <span className="font-semibold text-foreground">You.com</span></span></div>
   </div></header>;
