@@ -42,3 +42,6 @@ Implementation note: processing uses awaited, bounded server stages while the wo
 - [x] Give the spread map an accessible replay control and the evidence table stable row rhythm.
 - [x] Add restrained motion with skeleton states and reduced-motion support.
 - [x] Verify 1440, 1280, tablet and phone with no sideways page scroll, plus tests.
+
+## Open tasks
+- [ ] Screenshots of each page for the user
