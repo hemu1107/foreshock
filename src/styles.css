@@ -90,6 +90,42 @@
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Dark theme — deep ink surfaces, same teal/copper signal identity. */
+.dark {
+  --background: oklch(0.165 0.018 198);
+  --card: oklch(0.205 0.018 196);
+  --border: oklch(0.30 0.02 192);
+  --secondary: oklch(0.245 0.02 194);
+  --accent: oklch(0.27 0.025 192);
+
+  --foreground: oklch(0.93 0.012 190);
+  --muted-foreground: oklch(0.68 0.02 190);
+
+  --primary: oklch(0.66 0.095 184);
+  --primary-foreground: oklch(0.15 0.02 198);
+
+  --whisper: oklch(0.78 0.03 261);
+  --rumor: oklch(0.76 0.14 58.3);
+  --corroborated: oklch(0.75 0.19 41.1);
+  --confirmed: oklch(0.72 0.15 150.1);
+  --denied: oklch(0.70 0.19 27.5);
+  --cold: oklch(0.72 0.05 257.4);
+  --whisper-ink: oklch(0.80 0.03 261);
+  --rumor-ink: oklch(0.78 0.12 58.3);
+  --corroborated-ink: oklch(0.77 0.15 41.1);
+  --cold-ink: oklch(0.76 0.05 257.4);
+
+  --signal-teal: oklch(0.66 0.095 184);
+  --signal-copper: oklch(0.70 0.13 42);
+  --signal-mist: oklch(0.24 0.03 196);
+  --signal-rose: oklch(0.21 0.025 30);
+  --gradient-brand: linear-gradient(115deg, var(--signal-teal), oklch(0.58 0.08 210));
+  --gradient-page: linear-gradient(125deg, var(--signal-mist) 0%, var(--background) 42%, var(--signal-rose) 78%, var(--background) 100%);
+  --gradient-surface: linear-gradient(135deg, var(--card) 35%, color-mix(in oklab, var(--signal-mist) 30%, var(--card)));
+  --shadow-card: 0 2px 14px oklch(0 0 0 / 0.35);
+  --shadow-focus: 0 0 0 3px color-mix(in oklab, var(--primary) 30%, transparent);
+}
+
 @layer base {
   * { border-color: var(--border); letter-spacing: 0; }
   html { -webkit-text-size-adjust: 100%; }
@@ -435,6 +471,8 @@ body { isolation: isolate; background: transparent; }
 @keyframes atmosphere-drift { from { background-position: 0% 20%; } to { background-position: 100% 80%; } }
 .motion-paused, .motion-paused * , .motion-paused *::after { animation-play-state: paused !important; }
 .ambient-control { position: fixed; bottom: 18px; right: 18px; z-index: 30; background: var(--card); color: var(--primary); box-shadow: var(--shadow-card); width: 44px; height: 44px; }
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); color: var(--muted-foreground); cursor: pointer; transition: color 150ms var(--ease), border-color 150ms var(--ease); }
+.theme-toggle:hover { color: var(--primary); border-color: color-mix(in oklab, var(--primary) 40%, var(--border)); }
 .app-nav { background: var(--gradient-surface); }
 .fourshock-mark { display: inline-flex; align-items: center; gap: 3px; height: 26px; width: 25px; }
 .fourshock-mark i { display: block; width: 4px; border-radius: 2px; background: var(--gradient-brand); height: 10px; }

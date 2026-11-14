@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode, type Context } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
-import { Radar, Bookmark, BookOpen, ArrowUpRight, FlaskConical } from 'lucide-react';
+import { Radar, Bookmark, BookOpen, ArrowUpRight, FlaskConical, Moon, Sun } from 'lucide-react';
 import { sampleTraces, type Trace } from '@/mocks/sampleTraces';
 import { useServerFn } from '@tanstack/react-start';
 import { traceLive, recheckLive, advanceLive, readLive, listLive, watchLive } from '@/lib/live.functions';
@@ -36,6 +36,17 @@ export function SmokeProvider({children}:{children:ReactNode}) {
   return <WorkspaceContext.Provider value={{traces:sample?samples:live,sample,setSample,toggleWatch,recheck,create,load,error,loading,reload,isCached}}>{children}</WorkspaceContext.Provider>;
 }
 export function useWorkspace() { const value=useContext(WorkspaceContext); if(!value) throw new Error('Fourshock workspace is missing'); return value; }
+function ThemeToggle() {
+  const [dark,setDark]=useState(false);
+  useEffect(()=>{setDark(document.documentElement.classList.contains('dark'));},[]);
+  const toggle=()=>{
+    const next=!dark;
+    setDark(next);
+    document.documentElement.classList.toggle('dark',next);
+    try{localStorage.setItem('fourshock-theme',next?'dark':'light');}catch{/* private mode */}
+  };
+  return <button type="button" className="theme-toggle" onClick={toggle} aria-pressed={dark} aria-label={dark?'Switch to light mode':'Switch to dark mode'}>{dark?<Sun/>:<Moon/>}</button>;
+}
 export function Navigation() {
   const {sample,traces}=useWorkspace();
   const path=useRouterState({select:s=>s.location.pathname});
@@ -48,7 +59,7 @@ export function Navigation() {
       <Link to="/watchlist" aria-current={path==='/watchlist'?'page':undefined} className={`nav-link ${path==='/watchlist'?'active':''}`}><Bookmark/>Watchlist{traces.some(t=>t.watching)&&<span className="mono text-primary text-[13px]">{traces.filter(t=>t.watching).length}</span>}</Link>
       <Link to="/method" aria-current={path==='/method'?'page':undefined} className={`nav-link ${path==='/method'?'active':''}`}><BookOpen/>Method</Link>
     </nav>
-    <div className="nav-right"><span className="data-time">Data as of {time||'—'}</span>{sample&&<span className="mono text-[13px] text-primary">DEMO DATA</span>}<span className="powered-by">Powered by <span className="font-semibold text-foreground">You.com</span></span></div>
+    <div className="nav-right"><span className="data-time">Data as of {time||'—'}</span>{sample&&<span className="mono text-[13px] text-primary">DEMO DATA</span>}<span className="powered-by">Powered by <span className="font-semibold text-foreground">You.com</span></span><ThemeToggle/></div>
   </div></header>;
 }
 export function Footer({sources,live=false}:{sources?:number;live?:boolean}) { return <footer className="site-footer"><span>{sources ? live ? `Retrieved ${sources} sources via You.com Search, Contents and Research` : `${sources} fictional sample sources · No live retrieval performed` : 'See the signals before the shock.'}</span><div className="flex flex-wrap items-center gap-x-2 gap-y-1"><span>Built at Ground Truth NYC</span><span aria-hidden>·</span><span>Live web by You.com</span><span aria-hidden>·</span><span>Ledger by OpenCrawl</span><span aria-hidden>·</span><Link to="/method" className="flex items-center gap-1">Methodology<ArrowUpRight/></Link></div></footer>; }
