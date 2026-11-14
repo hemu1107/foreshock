@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Footer, SampleNotice, useWorkspace } from '@/components/smoke/workspace';
 import { StatusBadge, StatusLadder, KpiTile, OriginCard, SpreadMap, EvidenceTable, VerdictCard, CachedBadge, dateLabel, relative, StepTracker } from '@/components/smoke/evidence';
 import { scoreMentions } from '@/lib/scoring';
+import { dealParties } from '@/lib/official';
 import { stageIndex } from '@/lib/live';
 import { exportMarkdownBrief } from '@/lib/brief';
 import { WorkspaceState } from '@/components/smoke/state';
@@ -24,7 +25,7 @@ function TraceResult() {
     {loadError&&<Button variant="outline" onClick={()=>setRetry(n=>n+1)}><RefreshCw/>Try again</Button>}
     <Button asChild><Link to="/">Back to Trace</Link></Button>
   </WorkspaceState></div>;
-  const score=scoreMentions(trace.mentions,sample?SAMPLE_NOW:new Date(trace.checked_at));const origin=trace.mentions.find(m=>m.is_origin)??trace.mentions[0];
+  const score=scoreMentions(trace.mentions,sample?SAMPLE_NOW:new Date(trace.checked_at),sample?[]:dealParties(trace.claim,trace.entities));const origin=trace.mentions.find(m=>m.is_origin)??trace.mentions[0];
   
   const refresh=async()=>{setChecking(true);try{await recheck(id);toast.success(sample?'Sample re-checked. Evidence unchanged.':'Live trace re-checked.');}catch(e){toast.error(e instanceof Error?e.message:'Could not re-check this trace.');}finally{setChecking(false);}};
   const exportBrief=()=>{const brief=exportMarkdownBrief(trace,sample,new Date());const url=URL.createObjectURL(new Blob([brief],{type:'text/markdown;charset=utf-8'}));const anchor=document.createElement('a');anchor.href=url;anchor.download=`smoke-brief-${trace.id}.md`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast.success('Markdown brief exported.');};

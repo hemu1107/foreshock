@@ -23,14 +23,14 @@ export const statusRules: Record<Status, string> = {
 export function isIndependent(m: Mention) {
   return m.stance !== 'unrelated' && !m.attributes_to && ['original reporting', 'named source', 'anonymous source', 'official statement', 'filing'].includes(m.sourcing);
 }
-export function scoreMentions(mentions: Mention[], now: Date) {
+export function scoreMentions(mentions: Mention[], now: Date, parties: string[] = []) {
   const relevant = mentions.filter(m => m.stance !== 'unrelated');
   const independent = new Set(relevant.filter(isIndependent).map(m => registrableDomain(m.domain)));
   const echoes = relevant.filter(m => m.sourcing === 'cites outlet').length;
   const official = relevant.filter(m => m.involved_party && ['official statement', 'filing'].includes(m.sourcing));
   const timestamp = (m: Mention) => m.published_at ? new Date(m.published_at).getTime() : 0;
   const textOf = (m: Mention) => [m.title, m.snippet, ...m.attribution_quotes].join('\n');
-  const superseding = official.filter(m => supersedes(textOf(m)));
+  const superseding = official.filter(m => supersedes(textOf(m), parties));
   const denial = Math.max(0, ...official.filter(m => m.stance === 'denies' && !superseding.includes(m)).map(timestamp));
   const confirmations = official.filter(m => m.stance === 'confirms');
   const confirmed = confirmations.some(m => !denial || timestamp(m) > denial);
