@@ -30,7 +30,10 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Application architecture
-- Keep this stage entirely sample-driven and browser-safe; do not call external APIs or provision a backend until requested.
+- Execute external provider calls only in server-only helpers behind validated same-origin server functions; never ship API credentials to the browser.
 - Centralize rumor types, registrable-domain classification and deterministic scoring in `src/lib`; the future backend must reuse these rules.
-- Provide sample state through a shared React provider, with no persistent storage; this keeps the demo independent of services.
+- Keep fictional samples isolated in the React provider and persist live traces in Cloud; sample mode must never call external providers.
 - Use dedicated TanStack content routes and shared evidence components; each content route owns its metadata.
+
+- Process live jobs in bounded, awaited stage calls with durable database leases and idempotent source insertion; this avoids unreliable unawaited Worker tasks and duplicate AI fan-out.
+- Use the user-selected Gemini 4 Argon chat-completions model for structured source classification; preserve its selection during unrelated changes.

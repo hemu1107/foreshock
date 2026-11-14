@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794676507664,
+      "tag": "0000_smoke_live_pipeline",
+      "breakpoints": true
+    }
+  ]
 }

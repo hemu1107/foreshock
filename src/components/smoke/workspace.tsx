@@ -3,15 +3,31 @@ import { Link, useRouterState } from '@tanstack/react-router';
 import { Radar, Bookmark, BookOpen, ArrowUpRight, FlaskConical } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { sampleTraces, type Trace } from '@/mocks/sampleTraces';
+import { useServerFn } from '@tanstack/react-start';
+import { traceLive, recheckLive, advanceLive, readLive, listLive, watchLive } from '@/lib/live.functions';
+import { liveTraceSchema, type LiveTrace } from '@/lib/live';
+import { toast } from 'sonner';
 
-type Workspace = { traces: Trace[]; sample: boolean; setSample: (v:boolean)=>void; toggleWatch:(id:string)=>void; recheck:(id:string)=>void };
+type Workspace = { traces: LiveTrace[]; sample: boolean; setSample: (v:boolean)=>void; toggleWatch:(id:string)=>Promise<void>; recheck:(id:string)=>Promise<void>; create:(input:{query:string;entities:string[];window_days:7|30|90})=>Promise<string>; load:(id:string)=>Promise<LiveTrace|null>; error:string; loading:boolean };
 const WorkspaceContext = createContext<Workspace | null>(null);
 export function SmokeProvider({children}:{children:ReactNode}) {
-  const [traces,setTraces] = useState(sampleTraces);
+  const [samples,setSamples] = useState(sampleTraces);
+  const [live,setLive]=useState<LiveTrace[]>([]);
   const [sample,setSample] = useState(true);
-  const toggleWatch = (id:string) => setTraces(ts=>ts.map(t=>t.id===id?{...t,watching:!t.watching}:t));
-  const recheck = (id:string) => setTraces(ts=>ts.map(t=>t.id===id?{...t,checked_at:new Date().toISOString()}:t));
-  return <WorkspaceContext.Provider value={{traces,sample,setSample,toggleWatch,recheck}}>{children}</WorkspaceContext.Provider>;
+  const [error,setError]=useState(''),[loading,setLoading]=useState(false);
+  const createFn=useServerFn(traceLive), recheckFn=useServerFn(recheckLive), advanceFn=useServerFn(advanceLive), readFn=useServerFn(readLive), listFn=useServerFn(listLive), watchFn=useServerFn(watchLive);
+  const save=(t:LiveTrace)=>setLive(ts=>[t,...ts.filter(existing=>existing.id!==t.id)]);
+  const load=async(id:string)=>{const raw=await readFn({data:{id}});if(!raw)return null;const t=liveTraceSchema.parse(raw);save(t);return t;};
+  const drive=async(id:string)=>{
+    // One bounded stage per awaited call. Database leases prevent duplicate processing across tabs.
+    for(let remaining=20;remaining>0;remaining--){const t=await load(id);if(!t||['done','error'].includes(t.stage))return;await advanceFn({data:{id}});}
+    await load(id);
+  };
+  useEffect(()=>{if(sample)return;let active=true;setLoading(true);setError('');listFn().then(async rows=>{const results=await Promise.all(rows.map(r=>readFn({data:{id:r.id}})));if(active)setLive(results.filter(r=>r!==null).map(r=>liveTraceSchema.parse(r)));}).catch(()=>{if(active)setError('Could not load saved traces. Samples are still available.');}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[sample]);
+  const create=async(input:{query:string;entities:string[];window_days:7|30|90})=>{const r=await createFn({data:input});await load(r.trace_id);void drive(r.trace_id).catch(()=>{setError('Processing was interrupted. Re-open the trace to check its saved progress.');});return r.trace_id;};
+  const toggleWatch=async(id:string)=>{if(sample){setSamples(ts=>ts.map(t=>t.id===id?{...t,watching:!t.watching}:t));return;}const trace=live.find(t=>t.id===id);if(!trace)return;try{await watchFn({data:{id,watching:!trace.watching}});await load(id);}catch{toast.error('Could not save watch selection. Try again.');}};
+  const recheck=async(id:string)=>{if(sample){setSamples(ts=>ts.map(t=>t.id===id?{...t,checked_at:new Date().toISOString()}:t));return;}const current=live.find(t=>t.id===id);if(!current||['done','error'].includes(current.stage))await recheckFn({data:{id}});await load(id);await drive(id);};
+  return <WorkspaceContext.Provider value={{traces:sample?samples:live,sample,setSample,toggleWatch,recheck,create,load,error,loading}}>{children}</WorkspaceContext.Provider>;
 }
 export function useWorkspace() { const value=useContext(WorkspaceContext); if(!value) throw new Error('Smoke workspace is missing'); return value; }
 export function Navigation() {
@@ -29,5 +45,5 @@ export function Navigation() {
     <div className="nav-right"><span className="mono text-[10px] text-muted-foreground data-time">Data as of {time}</span><label className="flex items-center gap-2 text-[10px] text-muted-foreground"><Switch checked={sample} onCheckedChange={setSample} aria-label="Sample data"/>Sample data</label><span className="powered-by text-[10px] text-muted-foreground">Powered by <span className="font-semibold text-foreground">You.com</span></span></div>
   </div></header>;
 }
-export function Footer({sources}:{sources?:number}) { return <footer className="site-footer"><span>{sources ? `${sources} fictional sample sources · No live retrieval performed` : 'Find the smoke before the fire.'}</span><div className="flex items-center gap-5"><span className="mono">SMOKE INTELLIGENCE</span><Link to="/method" className="flex items-center gap-1">Our methodology<ArrowUpRight/></Link></div></footer>; }
+export function Footer({sources,live=false}:{sources?:number;live?:boolean}) { return <footer className="site-footer"><span>{sources ? live ? `Retrieved ${sources} sources via You.com Search, Contents and Research` : `${sources} fictional sample sources · No live retrieval performed` : 'Find the smoke before the fire.'}</span><div className="flex items-center gap-5"><span className="mono">SMOKE INTELLIGENCE</span><Link to="/method" className="flex items-center gap-1">Our methodology<ArrowUpRight/></Link></div></footer>; }
 export function SampleNotice() { return <div className="notice"><FlaskConical/><span>Fictional sample. Companies and reports are illustrative; source links open outlet homepages.</span></div>; }

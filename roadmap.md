@@ -5,8 +5,9 @@
 - [x] Verify sample tracing, watching, export and mobile layouts.
 
 ## Live pipeline
-- [ ] Connect the You.com credential and choose an available classification model.
-- [ ] Add saved live traces, mentions, history and durable processing leases.
-- [ ] Implement protected search, contents, classification, research, scoring and re-check processing.
-- [ ] Wire live progress polling and saved watchlists while preserving fictional samples.
-- [ ] Test live tracing end to end with a real query and verify error recovery.
+- [x] Connect the You.com credential and choose an available classification model.
+- [x] Add saved live traces, mentions, history and durable processing leases.
+- [x] Implement protected search, contents, classification, research, scoring and re-check processing.
+- [x] Wire live progress polling and saved watchlists while preserving fictional samples.
+- [x] Test live tracing end to end with a real query and verify error recovery.
+Implementation note: processing uses awaited, bounded server stages while the workspace is open, not an unawaited background task. Interrupted traces offer Resume trace.

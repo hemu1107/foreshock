@@ -14,13 +14,202 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      mentions: {
+        Row: {
+          attributes_to: string | null
+          attribution_quotes: Json
+          classified: boolean
+          contents_read: boolean
+          domain: string
+          id: string
+          involved_party: boolean
+          is_independent: boolean
+          is_origin: boolean
+          mainstream: boolean
+          outlet: string
+          paywalled: boolean
+          published_at: string | null
+          snippet: string
+          source_api: string
+          sourcing: string
+          stance: string
+          title: string
+          trace_id: string
+          url: string
+        }
+        Insert: {
+          attributes_to?: string | null
+          attribution_quotes?: Json
+          classified?: boolean
+          contents_read?: boolean
+          domain: string
+          id?: string
+          involved_party?: boolean
+          is_independent?: boolean
+          is_origin?: boolean
+          mainstream?: boolean
+          outlet: string
+          paywalled?: boolean
+          published_at?: string | null
+          snippet?: string
+          source_api?: string
+          sourcing?: string
+          stance?: string
+          title: string
+          trace_id: string
+          url: string
+        }
+        Update: {
+          attributes_to?: string | null
+          attribution_quotes?: Json
+          classified?: boolean
+          contents_read?: boolean
+          domain?: string
+          id?: string
+          involved_party?: boolean
+          is_independent?: boolean
+          is_origin?: boolean
+          mainstream?: boolean
+          outlet?: string
+          paywalled?: boolean
+          published_at?: string | null
+          snippet?: string
+          source_api?: string
+          sourcing?: string
+          stance?: string
+          title?: string
+          trace_id?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentions_trace_id_fkey"
+            columns: ["trace_id"]
+            isOneToOne: false
+            referencedRelation: "traces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      status_history: {
+        Row: {
+          at: string
+          id: string
+          reason: string
+          status: string
+          trace_id: string
+        }
+        Insert: {
+          at?: string
+          id?: string
+          reason: string
+          status: string
+          trace_id: string
+        }
+        Update: {
+          at?: string
+          id?: string
+          reason?: string
+          status?: string
+          trace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "status_history_trace_id_fkey"
+            columns: ["trace_id"]
+            isOneToOne: false
+            referencedRelation: "traces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      traces: {
+        Row: {
+          checked_at: string
+          claim: string
+          confidence: number
+          confirm_signals: Json
+          created_at: string
+          entities: Json
+          error: string | null
+          id: string
+          kill_signals: Json
+          lease_token: string | null
+          lease_until: string | null
+          origin_mention_id: string | null
+          paused: boolean
+          query: string
+          rechecking: boolean
+          research_result: Json | null
+          smoke_score: number
+          stage: string
+          status: string
+          summary_md: string
+          watch_signals: Json
+          watching: boolean
+          window_days: number
+        }
+        Insert: {
+          checked_at?: string
+          claim: string
+          confidence?: number
+          confirm_signals?: Json
+          created_at?: string
+          entities?: Json
+          error?: string | null
+          id?: string
+          kill_signals?: Json
+          lease_token?: string | null
+          lease_until?: string | null
+          origin_mention_id?: string | null
+          paused?: boolean
+          query: string
+          rechecking?: boolean
+          research_result?: Json | null
+          smoke_score?: number
+          stage?: string
+          status?: string
+          summary_md?: string
+          watch_signals?: Json
+          watching?: boolean
+          window_days?: number
+        }
+        Update: {
+          checked_at?: string
+          claim?: string
+          confidence?: number
+          confirm_signals?: Json
+          created_at?: string
+          entities?: Json
+          error?: string | null
+          id?: string
+          kill_signals?: Json
+          lease_token?: string | null
+          lease_until?: string | null
+          origin_mention_id?: string | null
+          paused?: boolean
+          query?: string
+          rechecking?: boolean
+          research_result?: Json | null
+          smoke_score?: number
+          stage?: string
+          status?: string
+          summary_md?: string
+          watch_signals?: Json
+          watching?: boolean
+          window_days?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      acquire_trace_lease: {
+        Args: { p_id: string; p_token: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
