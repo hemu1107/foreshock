@@ -18,7 +18,7 @@ export function claimType(claim: string) {
 export function evidenceLabel(score: number) { return score >= 75 ? 'Strong evidence' : score >= 45 ? 'Moderate evidence' : 'Weak evidence'; }
 export function bottomLine(summary: string) {
   const text = summary.replace(/[#*_>`]/g, '').replace(/\s+/g, ' ').trim();
-  const parts = text.split(/(?<=[a-z0-9)][.!?])\s+(?=[A-Z])/).filter(x => !/^(rules-based status|status|bottom line)\b[^.]*\.$/i.test(x.trim()));
+  const parts = text.split(/(?<=[a-z0-9)][.!?])\s+(?=[A-Z])/).filter(x => !/^(rules-based status|status|bottom line)\b[^.]*\.$/i.test(x.trim()) && !/assessment differs/i.test(x));
   const first = parts[0] ?? '';
   return first.length > 160 ? `${first.slice(0, 157)}…` : first;
 }
