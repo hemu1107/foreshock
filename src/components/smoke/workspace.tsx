@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode, type Context } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { Radar, Bookmark, BookOpen, ArrowUpRight, FlaskConical } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
 import { sampleTraces, type Trace } from '@/mocks/sampleTraces';
 import { useServerFn } from '@tanstack/react-start';
 import { traceLive, recheckLive, advanceLive, readLive, listLive, watchLive } from '@/lib/live.functions';
@@ -16,7 +15,8 @@ const WorkspaceContext = contextStore.__smokeWorkspaceContext ??= createContext<
 export function SmokeProvider({children}:{children:ReactNode}) {
   const [samples,setSamples] = useState(sampleTraces);
   const [live,setLive]=useState<LiveTrace[]>([]);
-  const [sample,setSample] = useState(true);
+  const [sample,setSample] = useState(false);
+  useEffect(()=>{if(new URLSearchParams(window.location.search).get('demo')==='1')setSample(true);},[]);
   const [error,setError]=useState(''),[loading,setLoading]=useState(false);
   const [reloadKey,setReloadKey]=useState(0),[freshChecks,setFreshChecks]=useState<Record<string,string>>({});
   const reload=()=>setReloadKey(n=>n+1);
@@ -37,10 +37,10 @@ export function SmokeProvider({children}:{children:ReactNode}) {
 }
 export function useWorkspace() { const value=useContext(WorkspaceContext); if(!value) throw new Error('Smoke workspace is missing'); return value; }
 export function Navigation() {
-  const {sample,setSample,traces}=useWorkspace();
+  const {sample,traces}=useWorkspace();
   const path=useRouterState({select:s=>s.location.pathname});
-  const [time,setTime]=useState('17:02');
-  useEffect(()=>{setTime(new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false}));},[]);
+  const [time,setTime]=useState('');
+  useEffect(()=>{const tick=()=>setTime(new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',timeZoneName:'short'}));tick();const i=setInterval(tick,30000);return()=>clearInterval(i);},[]);
   return <header className="app-nav"><div className="nav-inner">
     <Link to="/" className="wordmark" aria-label="Smoke home"><span className="logo-dot"/>smoke</Link>
     <nav className="nav-links" aria-label="Main navigation">
@@ -48,8 +48,8 @@ export function Navigation() {
       <Link to="/watchlist" className={`nav-link ${path==='/watchlist'?'active':''}`}><Bookmark/>Watchlist{traces.some(t=>t.watching)&&<span className="mono text-primary text-[10px]">{traces.filter(t=>t.watching).length}</span>}</Link>
       <Link to="/method" className={`nav-link ${path==='/method'?'active':''}`}><BookOpen/>Method</Link>
     </nav>
-    <div className="nav-right"><span className="mono text-[10px] text-muted-foreground data-time">Data as of {time}</span><label className="flex items-center gap-2 text-[10px] text-muted-foreground"><Switch checked={sample} onCheckedChange={setSample} aria-label="Sample data"/>Sample data</label><span className="powered-by text-[10px] text-muted-foreground">Powered by <span className="font-semibold text-foreground">You.com</span></span></div>
+    <div className="nav-right"><span className="mono text-[10px] text-muted-foreground data-time">Data as of {time||'—'}</span>{sample&&<span className="mono text-[10px] text-primary">DEMO DATA</span>}<span className="powered-by text-[10px] text-muted-foreground">Powered by <span className="font-semibold text-foreground">You.com</span></span></div>
   </div></header>;
 }
-export function Footer({sources,live=false}:{sources?:number;live?:boolean}) { return <footer className="site-footer"><span>{sources ? live ? `Retrieved ${sources} sources via You.com Search, Contents and Research` : `${sources} fictional sample sources · No live retrieval performed` : 'Find the smoke before the fire.'}</span><div className="flex items-center gap-5"><span className="mono">SMOKE INTELLIGENCE</span><Link to="/method" className="flex items-center gap-1">Our methodology<ArrowUpRight/></Link></div></footer>; }
+export function Footer({sources,live=false}:{sources?:number;live?:boolean}) { return <footer className="site-footer"><span>{sources ? live ? `Retrieved ${sources} sources via You.com Search, Contents and Research` : `${sources} fictional sample sources · No live retrieval performed` : 'Find the smoke before the fire.'}</span><div className="flex flex-wrap items-center gap-x-2 gap-y-1"><span>Built at Ground Truth NYC</span><span aria-hidden>·</span><span>Live web by You.com</span><span aria-hidden>·</span><span>Ledger by OpenCrawl</span><span aria-hidden>·</span><Link to="/method" className="flex items-center gap-1">Methodology<ArrowUpRight/></Link></div></footer>; }
 export function SampleNotice() { return <div className="notice"><FlaskConical/><span>Fictional sample. Companies and reports are illustrative; source links open outlet homepages.</span></div>; }
