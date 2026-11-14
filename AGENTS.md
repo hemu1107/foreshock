@@ -43,3 +43,4 @@ use the editor.
 - Apply deterministic official-source, superseded and echo/independent rules in `src/lib/official.ts` after AI classification; they override model labels so status stays explainable.
 
 - Keep saved-trace discovery and evidence search in browser-side presentation components; filtering must not launch provider calls or modify evidence scoring.
+- Aggregate weak signals with pure helpers in src/lib/signals.ts; the signal stack is presentation only and never changes status or score.
