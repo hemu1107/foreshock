@@ -78,7 +78,9 @@ export async function opencrawlPrecedents(queries: string[]): Promise<Precedent[
     }
     console.info('opencrawl_search', { queries: queries.slice(0, 3), source: 'connectors', results: documents.size });
     const raws = await Promise.all([...documents.keys()].slice(0, 4).map(async docId => ({ docId, markdown: caseMarkdown(await call('fetch', { id: docId })) })));
-    const cases = raws.map(r => parseCase(r.markdown, r.docId)).filter((c): c is Precedent => c !== null);
+    const seen = new Set<string>();
+    const cases = raws.map(r => parseCase(r.markdown, r.docId)).filter((c): c is Precedent => c !== null && !seen.has(c.case_title.toLowerCase()) && !!seen.add(c.case_title.toLowerCase()));
+    console.info('opencrawl_cases', cases.map(c => ({ title: c.case_title, outlet: c.outlet, outcome: c.outcome, days: c.days_to_resolution })));
     if (raws.length && !cases.length) console.warn('opencrawl_parse_zero', { firstRaw: raws[0]!.markdown.slice(0, 1500) });
     return cases;
   };

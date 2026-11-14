@@ -13,6 +13,7 @@ export function Precedents({ rows, outlet }: { rows: Precedent[]; outlet?: strin
     <ul className="ledger-cases">{rows.map(row => <li key={row.document_id}>
       <span className={`status-badge ${statusClass(precedentStatus(row.outcome))}`}><span className="status-dot"/>{row.outcome}</span>
       <h3 className="text-xs font-medium mt-2">{row.case_title}</h3>
+      {/\.md$/i.test(row.document_id) && <p className="mono text-[10px] text-muted-foreground mt-1">{row.document_id}</p>}
       <p className="text-[11px] text-muted-foreground mt-1">{[row.outlet, row.sourcing].filter(Boolean).join(' · ')}</p>
       {row.resolved && row.days_to_resolution !== null && <p className="mono text-[10px] text-muted-foreground mt-2">resolved in {row.days_to_resolution} days</p>}
       {row.resolution_source && <a className="inline-flex items-center gap-1 text-[11px] mt-2" href={row.resolution_source} target="_blank" rel="noreferrer">Resolution source<ArrowUpRight/></a>}

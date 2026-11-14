@@ -8,6 +8,11 @@ describe('OpenCrawl ledger rules', () => {
   it('always restricts searches to connector documents with eight results', () => {
     expect(ledgerSearchArgs('Bloomberg acquisition')).toEqual({query:'Bloomberg acquisition',source:'connectors',match:'any',limit:10});
   });
+  it('parses commit text with plain Case line and pipe-separated fields', () => {
+    const row=parseCase('Case: Acme buys Beta\nfile: cases/acme-beta.md\nfirst_reported_by: WSJ | date: 2024-02-01 | sourcing: people familiar\ndeal_type: acquisition | outcome: confirmed | resolved: true\ndays_to_resolution: 41\nresolution_source: https://example.com/pr','abc');
+    expect(row).toMatchObject({document_id:'cases/acme-beta.md',case_title:'Acme buys Beta',outlet:'Wall Street Journal',outcome:'confirmed',days_to_resolution:41,resolution_source:'https://example.com/pr',sourcing:'people familiar'});
+    expect(parseCase('first_reported_by: WSJ\noutcome: confirmed','x')).toBeNull();
+  });
   it('builds three short outlet, company and anonymous-source queries', () => {
     expect(precedentQueries('Acme buys Beta',['Acme','Beta'],'Bloomberg')).toEqual(['Bloomberg acquire','Acme acquire','talks acquire outcome']);
     expect(precedentQueries('Acme buys Beta',['Acme'],'WSJ')[0]).toBe('Wall Street Journal acquire');
@@ -22,7 +27,7 @@ describe('OpenCrawl ledger rules', () => {
   it('rejects unsafe resolution links without discarding the case', () => {
     expect(parseCase(markdown.replace('[Filing](https://example.com/filing)','javascript:alert(1)'),'one')?.resolution_source).toBeNull();
   });
-  it('deduplicates documents and fetches no more than four cases in a session', async () => {
+  it('deduplicates documents and case titles, fetching no more than four cases in a session', async () => {
     vi.stubEnv('OPENCRAWL_API_KEY','test-only');
     const calls: {method:string;params?:{name:string;arguments:Record<string,unknown>}}[]=[];
     vi.stubGlobal('fetch',vi.fn(async (_url:unknown,init:RequestInit) => {
@@ -33,7 +38,7 @@ describe('OpenCrawl ledger rules', () => {
       const content=body.params.name==='search'?{results:Array.from({length:8},(_,i)=>({id:`case-${i}`}))}:{markdown};
       return new Response(`event: message\ndata: ${JSON.stringify({id:body.id,result:{structuredContent:content}})}\n\n`);
     }));
-    expect(await opencrawlPrecedents(['Bloomberg acquisition','Acme acquisition','acquisition anonymous sources'])).toHaveLength(4);
+    expect(await opencrawlPrecedents(['Bloomberg acquisition','Acme acquisition','acquisition anonymous sources'])).toHaveLength(1);
     expect(calls.filter(c=>c.params?.name==='fetch')).toHaveLength(4);
     expect(calls.filter(c=>c.params?.name==='search').every(c=>c.params?.arguments['source']==='connectors')).toBe(true);
   });
